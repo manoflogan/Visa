@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Entry for all quiz controllers.
  * @author krishnanand (Kartik Krishnanand)
  */
 @RestController("/visa")
@@ -33,13 +32,11 @@ public class MathController {
         isInvalid(request.getParameter("key"))) {
       map.put("status", "error");
       map.put("message", "Bad Inputs");
-      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
+      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.UNAUTHORIZED);
     }
     int a = Integer.parseInt(request.getParameter("a"), 10);
     int b = Integer.parseInt(request.getParameter("b"), 10);
     int key = Integer.parseInt(request.getParameter("key"), 10);
-
-    
     if (key % 2 != 0) {
       map.put("status", "error");
       map.put("message", "Bad Inputs");
@@ -84,10 +81,10 @@ public class MathController {
   public ResponseEntity<Map<String, Object>> divide(
       @RequestBody Body body , HttpServletRequest request) {
     Map<String, Object> map = new HashMap<>();
-    if (body.getA() == null || body.getB() == null || request.getHeader("X-KEY-VAL") == null) {
+    if (body.getA() == null || body.getB() == null || isInvalid(request.getHeader("X-KEY-VAL"))) {
       map.put("status", "error");
       map.put("message", "Bad Inputs");
-      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
+      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.UNAUTHORIZED);
     }
     int a = body.getA();
     int b = body.getB();
@@ -97,7 +94,7 @@ public class MathController {
       map.put("status", "error");
       map.put("code", "401");
       map.put("message", "Wrong Key");
-      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
+      return new ResponseEntity<Map<String,Object>>(map, HttpStatus.UNAUTHORIZED);
     }
     double output = (double) ((double) a / b);
     Map<String, String> response = new HashMap<>();
@@ -105,7 +102,7 @@ public class MathController {
     response.put("InputB", String.valueOf(body.getB()));
     map.put("inputs", response);
     map.put("status", "success");
-    map.put("code", "200");
+    map.put("code", HttpStatus.OK);
     map.put("result", output);
     return new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
   }
